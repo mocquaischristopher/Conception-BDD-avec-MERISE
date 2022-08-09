@@ -12,21 +12,21 @@
 
   > On explique en une phrase comment sont associés deux acteurs(concepts).
 
-  - Un module est caractérisé par un numéro en Sémantique Versionning, un intitulé, un objectif pédagogique, un contenu (un texte et/ou une image et/ou une vidéo),  une durée (heures), un ou plusieurs tags, un auteur (formateur).
+  - Une leçon est caractérisé par un numéro en Sémantique Versionning, un intitulé, un objectif pédagogique, un contenu (un texte et/ou une image et/ou une vidéo),  une durée (heures), un ou plusieurs tags, un auteur (formateur).
   - Une formation est caractérisé par un numéro en Sémantique Versionning, un nom.
   - Un formateur est caractérisé par un code unique (auto-incrément), un nom, un prénom.
   - Un apprenant est caractérisé par un code d'inscription unique (UUID), un nom, un prénom, une adresse, une date de naissance.
-  - Une formation est terminé si tous les modules sont validés.
-  - Un apprenant peut valider lui-même un ou plusieurs modules.
+  - Une formation est terminé si toutes les leçons sont validés.
+  - Un apprenant peut valider lui-même une ou plusieurs leçons.
 
-  1. Un module contient un ou plusieurs contenus et un contenu à un seul module.
-  2. Un module contient un ou plusieurs tags et un tag à un plusieurs module.
-  3. Un module peut concerner un ou plusieurs formations et une formation à un ou plusieurs module.
+  1. Une leçon contient un ou plusieurs contenus et un contenu à une seule leçon.
+  2. Une leçon contient un ou plusieurs tags et un tag à une ou plusieurs leçon.
+  3. Une leçon peut concerner un ou plusieurs formations et une formation à une ou plusieurs leçon.
   4. Une formation est organisé par un seul formateur et un formateur organise zéro à plusieurs formations.
-  5. Un formateur peut être auteur d'un ou plusieurs modules et un module est écris par un seul formateur.
+  5. Un formateur peut être auteur d'une ou plusieurs leçon et une leçon est écris par un seul formateur.
   6. Un apprenant peut s'inscrire à un ou plusieurs formations et une formation à un ou plusieurs apprenants.
-  7. Un apprenant peut suivre un ou plusieurs modules et un modules est suivi par un ou plusieurs apprenants.
-  8. Un apprenant est évaluer pour un ou plusieurs modules (avec un état de fin de module: OK / KO) et un module est évaluer par zéro ou plusieurs apprenants.
+  7. Un apprenant peut suivre une ou plusieurs leçons et une leçon est suivi par un ou plusieurs apprenants.
+  8. Un apprenant est évaluer pour une ou plusieurs leçons (avec un état de fin de module: OK / KO) et une leçon est évaluer par zéro ou plusieurs apprenants.
 
 ## Dictionnaire de données
 
@@ -44,10 +44,10 @@
     | CodeT     | Code du formateur                  | M    | HH                                          |
     | NumF      | Numéro de formation                | M    | 5                                           |
     | NameF     | Nom de la formation                | M    | DevOps                                      |
-    | NumM      | Numéro du module                   | M    | 5                                           |
-    | TitleM    | Intitulé du module                 | M    | Commandes de base Git                       |
-    | DurationM | Durée du module                    | M    | 14                                          |
-    | EducObjM  | Objectif pédagogique du module     | M    | Comprendre Git                              |
+    | NumL      | Numéro de la leçon                 | M    | 5                                           |
+    | TitleL    | Intitulé de la leçon               | M    | Commandes de base Git                       |
+    | DurationL | Durée de la leçon                  | M    | 14                                          |
+    | EducObjL  | Objectif pédagogique de la leçon   | M    | Comprendre Git                              |
     | NumC      | Numéro du contenu                  | M    | 1                                           |
     | TextC     | Texte du contenu                   | M    | Initiation à Git                            |
     | ImageC    | Image du contenu                   | M    | LogoGithub.png                              |
@@ -88,18 +88,18 @@
   > Le MPD peut être générer plusieurs fois grâce à un MLD, afin de correspondre à une base de données spécifique : Oracle, MySQL, PostgreSQL, etc...
 
   ```
-  Tags = (NumT INTEGER, NameT VARCHAR(50) );
-  Person = (IdPerson INTEGER, lastname VARCHAR(50) , firstname VARCHAR(50) );
-  Learners = (RegNumber BIGINT, Address VARCHAR(50) , Birthdate DATE, #IdPerson);
-  Trainers = (CodeT VARCHAR(4) , #IdPerson);
-  Modules = (NumM INTEGER, TitleM VARCHAR(50) , DurationM TIME, EducObjM VARCHAR(50) , #CodeT);
-  Formations = (NumF INTEGER, NameF VARCHAR(50) , #CodeT);
-  Content = (NumC INTEGER, TextC VARCHAR(50) , ImageC VARCHAR(50) , VideoC VARCHAR(50) , #NumM);
-  Behove = (#NumM, #NumF);
-  Evaluate = (#NumM, #RegNumber, StateM BOOLEAN);
-  Register = (#NumF, #RegNumber, FinishF BOOLEAN);
-  Participate = (#NumM, #RegNumber, ValidM BOOLEAN);
-  Associate = (#NumM, #NumT);
+    Tags = (NumT INTEGER, NameT VARCHAR(50) );
+    Person = (IdPerson INTEGER, lastname VARCHAR(50) , firstname VARCHAR(50) );
+    Learners = (RegNumber BIGINT, Address VARCHAR(50) , Birthdate DATE, #IdPerson);
+    Trainers = (CodeT VARCHAR(4) , #IdPerson);
+    Lessons = (NumL INTEGER, TitleL VARCHAR(50) , DurationL TIME, EducObjL VARCHAR(50) , #CodeT);
+    Formations = (NumF INTEGER, NameF VARCHAR(50) , #CodeT);
+    Content = (NumC INTEGER, TextC VARCHAR(50) , ImageC VARCHAR(50) , VideoC VARCHAR(50) , #NumL);
+    Behove = (#NumL, #NumF);
+    Evaluate = (#NumL, #RegNumber, StateM BOOLEAN);
+    Register = (#NumF, #RegNumber, FinishF BOOLEAN);
+    Participate = (#NumL, #RegNumber, ValidM BOOLEAN);
+    Associate = (#NumL, #NumT);
   ```
 
 ## Script SQL de la base de données
@@ -137,14 +137,14 @@
       FOREIGN KEY(IdPerson) REFERENCES Person(IdPerson)
     );
 
-    CREATE TABLE Modules(
-      NumM INTEGER,
-      TitleM VARCHAR(50)  NOT NULL,
-      DurationM TIME NOT NULL,
-      EducObjM VARCHAR(50)  NOT NULL,
+    CREATE TABLE Lessons(
+      NumL INTEGER,
+      TitleL VARCHAR(50)  NOT NULL,
+      DurationL TIME NOT NULL,
+      EducObjL VARCHAR(50)  NOT NULL,
       CodeT VARCHAR(4)  NOT NULL,
-      PRIMARY KEY(NumM),
-      UNIQUE(TitleM),
+      PRIMARY KEY(NumL),
+      UNIQUE(TitleL),
       FOREIGN KEY(CodeT) REFERENCES Trainers(CodeT)
     );
 
@@ -162,25 +162,25 @@
       TextC VARCHAR(50)  NOT NULL,
       ImageC VARCHAR(50)  NOT NULL,
       VideoC VARCHAR(50)  NOT NULL,
-      NumM INTEGER NOT NULL,
+      NumL INTEGER NOT NULL,
       PRIMARY KEY(NumC),
-      FOREIGN KEY(NumM) REFERENCES Modules(NumM)
+      FOREIGN KEY(NumL) REFERENCES Lessons(NumL)
     );
 
     CREATE TABLE Behove(
-      NumM INTEGER,
+      NumL INTEGER,
       NumF INTEGER,
-      PRIMARY KEY(NumM, NumF),
-      FOREIGN KEY(NumM) REFERENCES Modules(NumM),
+      PRIMARY KEY(NumL, NumF),
+      FOREIGN KEY(NumL) REFERENCES Lessons(NumL),
       FOREIGN KEY(NumF) REFERENCES Formations(NumF)
     );
 
     CREATE TABLE Evaluate(
-      NumM INTEGER,
+      NumL INTEGER,
       RegNumber BIGINT,
       StateM BOOLEAN NOT NULL,
-      PRIMARY KEY(NumM, RegNumber),
-      FOREIGN KEY(NumM) REFERENCES Modules(NumM),
+      PRIMARY KEY(NumL, RegNumber),
+      FOREIGN KEY(NumL) REFERENCES Lessons(NumL),
       FOREIGN KEY(RegNumber) REFERENCES Learners(RegNumber)
     );
 
@@ -194,19 +194,20 @@
     );
 
     CREATE TABLE Participate(
-      NumM INTEGER,
+      NumL INTEGER,
       RegNumber BIGINT,
       ValidM BOOLEAN NOT NULL,
-      PRIMARY KEY(NumM, RegNumber),
-      FOREIGN KEY(NumM) REFERENCES Modules(NumM),
+      PRIMARY KEY(NumL, RegNumber),
+      FOREIGN KEY(NumL) REFERENCES Lessons(NumL),
       FOREIGN KEY(RegNumber) REFERENCES Learners(RegNumber)
     );
 
     CREATE TABLE Associate(
-      NumM INTEGER,
+      NumL INTEGER,
       NumT INTEGER,
-      PRIMARY KEY(NumM, NumT),
-      FOREIGN KEY(NumM) REFERENCES Modules(NumM),
+      PRIMARY KEY(NumL, NumT),
+      FOREIGN KEY(NumL) REFERENCES Lessons(NumL),
       FOREIGN KEY(NumT) REFERENCES Tags(NumT)
     );
+
   ```
