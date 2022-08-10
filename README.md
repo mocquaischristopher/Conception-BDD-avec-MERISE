@@ -80,13 +80,7 @@
 
   ![class mld]( docs/brief_MLD.png "class MLD")
 
-
-## MPD (Modèle Physique de Données)
-
-  > Le MPD est la continuité du MLD, c'est la transformation du MLD dans le format d'une base de données (textuelle). Le MPD permet de créer les scripts SQL.
-
-  > Le MPD peut être générer plusieurs fois grâce à un MLD, afin de correspondre à une base de données spécifique : Oracle, MySQL, PostgreSQL, etc...
-
+  - MLD en version textuel : 
   ```
     Tags = (NumT INTEGER, NameT VARCHAR(50) );
     Person = (IdPerson INTEGER, lastname VARCHAR(50) , firstname VARCHAR(50) );
@@ -101,6 +95,15 @@
     Participate = (#NumL, #RegNumber, ValidM BOOLEAN);
     Associate = (#NumL, #NumT);
   ```
+
+
+## MPD (Modèle Physique de Données)
+
+  > Le MPD est la continuité du MLD, c'est la transformation du MLD dans le format d'une base de données (textuelle). Le MPD permet de créer les scripts SQL.
+
+  > Le MPD peut être générer plusieurs fois grâce à un MLD, afin de correspondre à une base de données spécifique : Oracle, MySQL, PostgreSQL, etc...
+
+  ![class mpd]( docs/MPD.png "class MPD")
 
 ## Script SQL de la base de données
   > C'est la représentation final de ce que donnera le schémas de la base de données dans le language de celle-ci.
